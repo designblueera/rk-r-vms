@@ -138,6 +138,44 @@ export default function SiteAdminSidebar({ collapsed, onToggle }: SiteAdminSideb
               {/* Inject Work Flows expandable item in CORE CONFIGURATION */}
               {group === 'CORE CONFIGURATION' && (
                 <div>
+                  {/* Dashboard */}
+                  {items.filter(i => i.id === 'sa-dashboard').map((item) => {
+                    const isActive = pathname === item.href || pathname.startsWith(item.href + '/');
+                    return (
+                      <Link key={item.id} href={item.href}>
+                        <div
+                          className={`relative flex items-center gap-3 mx-2 my-0.5 rounded-lg cursor-pointer transition-all duration-150
+                            ${collapsed ? 'justify-center px-0 py-2.5' : 'px-3 py-2'}
+                            ${isActive ? 'bg-primary-600/20 text-white' : 'hover:bg-white/[0.07] text-white/70 hover:text-white'}`}
+                          title={collapsed ? item.label : undefined}
+                        >
+                          {isActive && <div className="absolute left-0 top-1/2 -translate-y-1/2 w-0.5 h-5 rounded-r-full bg-primary-400" />}
+                          <span className={`shrink-0 ${isActive ? 'text-primary-400' : ''}`}>{item.icon}</span>
+                          {!collapsed && <span className="text-[13px] font-medium truncate flex-1">{item.label}</span>}
+                        </div>
+                      </Link>
+                    );
+                  })}
+
+                  {/* Visitor Types */}
+                  {items.filter(i => i.id === 'sa-visitor-types').map((item) => {
+                    const isActive = pathname === item.href || pathname.startsWith(item.href + '/');
+                    return (
+                      <Link key={item.id} href={item.href}>
+                        <div
+                          className={`relative flex items-center gap-3 mx-2 my-0.5 rounded-lg cursor-pointer transition-all duration-150
+                            ${collapsed ? 'justify-center px-0 py-2.5' : 'px-3 py-2'}
+                            ${isActive ? 'bg-primary-600/20 text-white' : 'hover:bg-white/[0.07] text-white/70 hover:text-white'}`}
+                          title={collapsed ? item.label : undefined}
+                        >
+                          {isActive && <div className="absolute left-0 top-1/2 -translate-y-1/2 w-0.5 h-5 rounded-r-full bg-primary-400" />}
+                          <span className={`shrink-0 ${isActive ? 'text-primary-400' : ''}`}>{item.icon}</span>
+                          {!collapsed && <span className="text-[13px] font-medium truncate flex-1">{item.label}</span>}
+                        </div>
+                      </Link>
+                    );
+                  })}
+
                   {/* Work Flows Parent */}
                   <div
                     onClick={() => { if (!collapsed) setWorkflowExpanded(prev => !prev); }}
@@ -213,10 +251,29 @@ export default function SiteAdminSidebar({ collapsed, onToggle }: SiteAdminSideb
                       <div className="w-1 h-1 rounded-full bg-primary-400" />
                     </div>
                   )}
+
+                  {/* Remaining CORE CONFIGURATION items (Induction Hub, Branding) */}
+                  {items.filter(i => i.id !== 'sa-dashboard' && i.id !== 'sa-visitor-types').map((item) => {
+                    const isActive = pathname === item.href || pathname.startsWith(item.href + '/');
+                    return (
+                      <Link key={item.id} href={item.href}>
+                        <div
+                          className={`relative flex items-center gap-3 mx-2 my-0.5 rounded-lg cursor-pointer transition-all duration-150
+                            ${collapsed ? 'justify-center px-0 py-2.5' : 'px-3 py-2'}
+                            ${isActive ? 'bg-primary-600/20 text-white' : 'hover:bg-white/[0.07] text-white/70 hover:text-white'}`}
+                          title={collapsed ? item.label : undefined}
+                        >
+                          {isActive && <div className="absolute left-0 top-1/2 -translate-y-1/2 w-0.5 h-5 rounded-r-full bg-primary-400" />}
+                          <span className={`shrink-0 ${isActive ? 'text-primary-400' : ''}`}>{item.icon}</span>
+                          {!collapsed && <span className="text-[13px] font-medium truncate flex-1">{item.label}</span>}
+                        </div>
+                      </Link>
+                    );
+                  })}
                 </div>
               )}
 
-              {items.map((item) => {
+              {group !== 'CORE CONFIGURATION' && items.map((item) => {
                 const isActive = pathname === item.href || pathname.startsWith(item.href + '/');
                 return (
                   <Link key={item.id} href={item.href}>
