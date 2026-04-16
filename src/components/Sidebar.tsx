@@ -43,9 +43,9 @@ export default function Sidebar({ collapsed, onToggle }: SidebarProps) {
   const [workflowExpanded, setWorkflowExpanded] = useState(isWorkflowActive);
   const [roleDropdownOpen, setRoleDropdownOpen] = useState(false);
 
-  const roleOptions: Array<'Global Overview' | 'Site A' | 'Site B'> = ['Global Overview', 'Site A', 'Site B'];
+  const roleOptions: Array<'Global' | 'Site A' | 'Site B'> = ['Global', 'Site A', 'Site B'];
 
-  const handleRoleChange = (role: 'Global Overview' | 'Site A' | 'Site B') => {
+  const handleRoleChange = (role: 'Global' | 'Site A' | 'Site B') => {
     setSelectedRole(role);
     setRoleDropdownOpen(false);
     if (role === 'Site A' || role === 'Site B') {
