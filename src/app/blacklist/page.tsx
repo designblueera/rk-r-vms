@@ -694,7 +694,7 @@ type TabId = 'internal' | 'third-party' | 'rules';
 
 export default function BlacklistWatchlistsPage() {
   const [activeTab, setActiveTab] = useState<TabId>('internal');
-  const [showAddModal, setShowAddModal] = useState(true); // open by default to show modal
+  const [showAddModal, setShowAddModal] = useState(false);
 
   const tabs: { id: TabId; label: string; count?: number }[] = [
     { id: 'internal', label: 'Internal Blacklist', count: internalBlacklist.length },
