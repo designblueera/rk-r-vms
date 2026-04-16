@@ -39,12 +39,12 @@ export default function SiteAdminSidebar({ collapsed, onToggle }: SiteAdminSideb
   const isPreRegistered = pathname === '/site-admin/workflows/pre-registered' || pathname.startsWith('/site-admin/workflows/pre-registered/');
   const isWalkIn = pathname === '/site-admin/workflows/walk-in' || pathname.startsWith('/site-admin/workflows/walk-in/');
 
-  const roleOptions: Array<'Global Overview' | 'Site A' | 'Site B'> = ['Global Overview', 'Site A', 'Site B'];
+  const roleOptions: Array<'Global' | 'Site A' | 'Site B'> = ['Global', 'Site A', 'Site B'];
 
-  const handleRoleChange = (role: 'Global Overview' | 'Site A' | 'Site B') => {
+  const handleRoleChange = (role: 'Global' | 'Site A' | 'Site B') => {
     setSelectedRole(role);
     setRoleDropdownOpen(false);
-    if (role === 'Global Overview') {
+    if (role === 'Global') {
       window.location.href = '/dashboard';
     } else if (role === 'Site B') {
       window.location.href = '/site-admin/dashboard';

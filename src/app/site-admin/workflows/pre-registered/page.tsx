@@ -6,7 +6,7 @@ import { useRouter } from 'next/navigation';
 import { useRole } from '@/context/RoleContext';
 import {
   GitBranch, Plus, Clock, CheckCircle, X, Briefcase, HardHat, UserCheck,
-  Star, Truck, Shield, Users, Pencil, Eye, MoreVertical, Zap, FileText,
+  Star, Truck, Shield, Users, Pencil, Eye, MoreVertical, Zap, FileText, Download,
 } from 'lucide-react';
 
 interface PreRegisteredWorkflow {
@@ -50,7 +50,51 @@ const allVisitorTypes = [
   { name: 'General Visitor', description: 'General public and walk-in visitors' },
 ];
 
-// Workflows from Global Overview (pre-registered)
+// Global Pre-Registered Workflows (master list from Global login)
+const globalPreRegisteredWorkflows: PreRegisteredWorkflow[] = [
+  {
+    id: 1,
+    name: 'Vendor Onboarding Flow',
+    visitorType: 'Vendor',
+    status: 'active',
+    steps: 3,
+    fields: 7,
+    lastUpdated: '2 days ago',
+    description: 'NDA sign-off, ID verification, host approval and badge issuance.',
+  },
+  {
+    id: 2,
+    name: 'Contractor Access Flow',
+    visitorType: 'Contractor',
+    status: 'active',
+    steps: 3,
+    fields: 10,
+    lastUpdated: '5 days ago',
+    description: 'Safety induction, compliance check, site access and escort assignment.',
+  },
+  {
+    id: 3,
+    name: 'VIP Executive Express Flow',
+    visitorType: 'VIP / Executive',
+    status: 'draft',
+    steps: 2,
+    fields: 6,
+    lastUpdated: '1 week ago',
+    description: 'Express check-in with auto-escort and host notification.',
+  },
+  {
+    id: 4,
+    name: 'Interviewee Check-in Flow',
+    visitorType: 'Interviewee',
+    status: 'active',
+    steps: 3,
+    fields: 9,
+    lastUpdated: '3 days ago',
+    description: 'Candidate registration, pre-screening and arrival check-in.',
+  },
+];
+
+// Site A local workflows
 const initialWorkflows: PreRegisteredWorkflow[] = [
   {
     id: 1,
@@ -99,7 +143,9 @@ export default function SiteAPreRegisteredWorkflowsPage() {
   const { siteName } = useRole();
   const [workflows, setWorkflows] = useState<PreRegisteredWorkflow[]>(initialWorkflows);
   const [showTypeModal, setShowTypeModal] = useState(false);
+  const [showImportModal, setShowImportModal] = useState(false);
   const [openMenuId, setOpenMenuId] = useState<number | null>(null);
+  const [importedIds, setImportedIds] = useState<number[]>([]);
 
   const handleSelectVisitorType = (typeName: string) => {
     setShowTypeModal(false);
@@ -120,6 +166,14 @@ export default function SiteAPreRegisteredWorkflowsPage() {
     setOpenMenuId(null);
   };
 
+  const handleImportWorkflow = (globalWorkflow: PreRegisteredWorkflow) => {
+    const alreadyExists = workflows.some(w => w.name === globalWorkflow.name);
+    if (alreadyExists) return;
+    const newId = Math.max(...workflows.map(w => w.id), 0) + 1;
+    setWorkflows(prev => [...prev, { ...globalWorkflow, id: newId }]);
+    setImportedIds(prev => [...prev, globalWorkflow.id]);
+  };
+
   const activeCount = workflows.filter(w => w.status === 'active').length;
   const draftCount = workflows.filter(w => w.status === 'draft').length;
 
@@ -135,13 +189,22 @@ export default function SiteAPreRegisteredWorkflowsPage() {
               {siteName} · {workflows.length} workflows · {activeCount} active · {draftCount} draft
             </p>
           </div>
-          <button
-            onClick={() => setShowTypeModal(true)}
-            className="flex items-center gap-1.5 px-4 py-2 text-[13px] font-semibold text-white bg-primary-600 rounded-lg hover:bg-primary-700 transition-all shadow-sm"
-          >
-            <Plus size={15} />
-            Create New Workflow
-          </button>
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => setShowImportModal(true)}
+              className="flex items-center gap-1.5 px-4 py-2 text-[13px] font-semibold text-primary-600 bg-white border border-primary-600 rounded-lg hover:bg-primary-50 transition-all shadow-sm"
+            >
+              <Download size={15} />
+              Import from Global
+            </button>
+            <button
+              onClick={() => setShowTypeModal(true)}
+              className="flex items-center gap-1.5 px-4 py-2 text-[13px] font-semibold text-white bg-primary-600 rounded-lg hover:bg-primary-700 transition-all shadow-sm"
+            >
+              <Plus size={15} />
+              Create New Workflow
+            </button>
+          </div>
         </div>
 
         {/* Summary Bar */}
@@ -300,6 +363,80 @@ export default function SiteAPreRegisteredWorkflowsPage() {
                   </button>
                 );
               })}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Import from Global Modal */}
+      {showImportModal && (
+        <div className="fixed inset-0 bg-black/40 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-lg">
+            <div className="flex items-center justify-between p-5 border-b border-border">
+              <div>
+                <h2 className="text-[15px] font-bold text-text-primary">Import from Global</h2>
+                <p className="text-[12px] text-text-muted mt-0.5">Select a pre-registered workflow from the Global master library</p>
+              </div>
+              <button onClick={() => setShowImportModal(false)} className="p-1.5 rounded-lg hover:bg-surface transition-colors text-text-muted">
+                <X size={16} />
+              </button>
+            </div>
+            <div className="p-4 space-y-2 max-h-[460px] overflow-y-auto">
+              {globalPreRegisteredWorkflows.map((gw) => {
+                const icon = visitorTypeIcons[gw.visitorType] ?? <GitBranch size={18} />;
+                const colorClass = visitorTypeColors[gw.visitorType] ?? 'bg-slate-100 text-slate-600';
+                const alreadyImported = importedIds.includes(gw.id) || workflows.some(w => w.name === gw.name);
+                return (
+                  <div
+                    key={gw.id}
+                    className="flex items-center gap-3 p-3 rounded-xl border border-border bg-white hover:bg-surface/50 transition-all"
+                  >
+                    <div className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 ${colorClass}`}>
+                      {icon}
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-[13px] font-semibold text-text-primary leading-tight">{gw.name}</p>
+                      <p className="text-[11px] text-text-muted mt-0.5">{gw.visitorType} · {gw.steps} steps · {gw.fields} fields</p>
+                      <p className="text-[11px] text-text-secondary mt-0.5 truncate">{gw.description}</p>
+                    </div>
+                    <div className="flex items-center gap-2 shrink-0">
+                      <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-full ${
+                        gw.status === 'active' ? 'bg-green-50 text-green-700 border border-green-100' : 'bg-amber-50 text-amber-700 border border-amber-100'
+                      }`}>
+                        {gw.status === 'active' ? '● Active' : '○ Draft'}
+                      </span>
+                      <button
+                        onClick={() => handleImportWorkflow(gw)}
+                        disabled={alreadyImported}
+                        className={`flex items-center gap-1 px-3 py-1.5 text-[12px] font-semibold rounded-lg transition-all ${
+                          alreadyImported
+                            ? 'bg-green-50 text-green-600 border border-green-200 cursor-default' :'bg-primary-600 text-white hover:bg-primary-700'
+                        }`}
+                      >
+                        {alreadyImported ? (
+                          <>
+                            <CheckCircle size={12} />
+                            Imported
+                          </>
+                        ) : (
+                          <>
+                            <Download size={12} />
+                            Import
+                          </>
+                        )}
+                      </button>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+            <div className="p-4 border-t border-border flex justify-end">
+              <button
+                onClick={() => setShowImportModal(false)}
+                className="px-4 py-2 text-[13px] font-semibold text-text-secondary bg-surface hover:bg-border rounded-lg transition-all"
+              >
+                Done
+              </button>
             </div>
           </div>
         </div>
